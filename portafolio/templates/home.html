@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow mt-3">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 text-center border-end">
+                    {% if perfil.foto %}
+                        <img src="{{ perfil.foto.url }}" class="rounded-circle border" style="width: 180px; height: 180px; object-fit: cover;">
+                    {% endif %}
+                    <h3 class="mt-2 text-primary">{{ perfil.nombres.split.0 }} {{ perfil.apellidos.split.0 }}</h3>
+                    <p class="badge bg-secondary"><i class="bi bi-person-circle"></i> Sexo: {{ perfil.get_sexo_display }}</p>
+                </div>
+                <div class="col-md-9 position-relative">
+                    <div class="position-absolute top-0 end-0 p-2">
+                        <a href="/admin/portafolio/datospersonales/{{ perfil.idperfil }}/change/" class="btn btn-sm btn-outline-danger shadow-sm">
+                            <i class="bi bi-gear-fill"></i> Configuración
+                        </a>
+                    </div>
+
+                    {% if perfil.descripcionperfil %}
+                    <div class="mb-3 mt-2">
+                        <p class="text-muted" style="font-style: italic; border-left: 4px solid #0d6efd; padding-left: 15px; font-size: 0.95rem;">
+                            {{ perfil.descripcionperfil }}
+                        </p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><i class="bi bi-card-text"></i> <strong>Cédula:</strong> {{ perfil.numerocedula }}</p>
+                            <p><i class="bi bi-flag"></i> <strong>Nacionalidad:</strong> {{ perfil.nacionalidad.name }}</p>
+                            <p><i class="bi bi-geo-alt"></i> <strong>Lugar de Nacimiento:</strong> {{ perfil.lugarnacimiento }}</p>
+                            <p><i class="bi bi-calendar3"></i> <strong>Fecha de Nacimiento:</strong> {{ perfil.fechanacimiento|date:"d/m/Y" }}</p>
+                            <p><i class="bi bi-heart"></i> <strong>Estado Civil:</strong> {{ perfil.estadocivil }}</p>
+                        </div>
+                        <div class="col-md-6 border-start">
+                            <p><i class="bi bi-house-door"></i> <strong>Domicilio:</strong> {{ perfil.direcciondomiciliaria }}</p>
+                            <p><i class="bi bi-card-list"></i> <strong>Licencia:</strong> {{ perfil.licenciaconducir|default:"No posee" }}</p>
+                            {% if perfil.direcciontrabajo %}<p><i class="bi bi-briefcase"></i> <strong>Trabajo:</strong> {{ perfil.direcciontrabajo }}</p>{% endif %}
+                            {% if perfil.telefonoconvencional %}<p><i class="bi bi-phone"></i> <strong>Convencional:</strong> {{ perfil.telefonoconvencional }}</p>{% endif %}
+                            {% if perfil.sitioweb %}
+                                <p><i class="bi bi-globe"></i> <strong>Web:</strong> <a href="{{ perfil.sitioweb }}" target="_blank">Ver Enlace</a></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4 px-2">
+        <div class="col-md-6 mb-3">
+            <div class="card h-100 shadow-sm border-0 border-top border-4 border-warning">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3 text-dark"><i class="bi bi-star-fill text-warning me-2"></i>Aptitudes</h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% if perfil.lista_aptitudes %}
+                            {% for item in perfil.lista_aptitudes %}
+                                <span class="badge rounded-pill bg-primary px-3 py-2 shadow-sm">{{ item }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <small class="text-muted">Agrega aptitudes separadas por comas en el Admin.</small>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card h-100 shadow-sm border-0 border-top border-4 border-info">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3 text-dark"><i class="bi bi-emoji-smile-fill text-info me-2"></i>Actitudes</h5>
+                    <ul class="list-unstyled">
+                        {% if perfil.lista_actitudes %}
+                            {% for item in perfil.lista_actitudes %}
+                                <li class="mb-2"><i class="bi bi-check2-circle text-success me-2"></i> {{ item }}</li>
+                            {% endfor %}
+                        {% else %}
+                            <small class="text-muted">Agrega actitudes separadas por comas en el Admin.</small>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 1cm 1.5cm 1.5cm 1.5cm;
+            @frame footer {
+                -pdf-frame-content: footerContent;
+                bottom: 1cm; margin-left: 1.5cm; margin-right: 1.5cm; height: 1cm;
+            }
+        }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 10pt;
+            color: #2c3e50;
+            line-height: 1.4;
+        }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        
+        /* CABECERA SIN LÍNEAS DIVISORIAS INTERNAS */
+        .header-box { border-bottom: 3px solid #002d5e; padding-bottom: 8px; margin-bottom: 12px; }
+        .name-title { font-size: 22pt; font-weight: bold; color: #002d5e; margin: 0; text-transform: uppercase; }
+        
+        .personal-data-box { 
+            margin-top: 8px; 
+            font-size: 9pt; 
+            background-color: #f4f7f9; 
+            padding: 10px;
+            /* Se quitó el border-left que dividía la info */
+        }
+        .info-cell { padding: 2px 0; }
+        .label { font-weight: bold; color: #002d5e; }
+        
+        /* IMAGEN DE PERFIL */
+        .photo-frame { 
+            width: 95px; 
+            height: 115px; 
+            border: 2px solid #002d5e; 
+        }
+
+        /* SECCIONES */
+        .section-header {
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 11pt;
+            font-weight: bold;
+            color: #ffffff;
+            background-color: #002d5e;
+            padding: 5px 12px;
+            text-transform: uppercase;
+        }
+        .main-table { margin-bottom: 8px; page-break-inside: avoid; }
+        .left-col { width: 28%; vertical-align: top; font-weight: bold; color: #444; font-size: 9pt; }
+        .right-col { width: 72%; vertical-align: top; }
+        
+        .item-title { font-weight: bold; color: #002d5e; font-size: 10.5pt; }
+        .item-subtitle { font-style: italic; color: #666; }
+        
+        .footer { font-size: 8pt; text-align: center; color: #7f8c8d; border-top: 1px solid #d1d8e0; }
+    </style>
+</head>
+<body>
+
+    <div class="header-box">
+        <table>
+            <tr>
+                <td style="width: 75%; vertical-align: top;">
+                    <h1 class="name-title">{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
+                    <div style="font-size: 9pt; color: #555; margin-bottom: 5px;">
+                        📍 {{ perfil.direcciondomiciliaria }} | 📞 {{ perfil.telefonoconvencional }}
+                    </div>
+                    
+                    <div class="personal-data-box">
+                        <table>
+                            <tr>
+                                <td class="info-cell"><span class="label">Cédula:</span> {{ perfil.numerocedula }}</td>
+                                <td class="info-cell"><span class="label">Nacionalidad:</span> {{ perfil.nacionalidad.name }}</td>
+                            </tr>
+                            <tr>
+                                <td class="info-cell"><span class="label">Estado Civil:</span> {{ perfil.estadocivil }}</td>
+                                <td class="info-cell"><span class="label">Sexo:</span> {{ perfil.sexo }}</td>
+                            </tr>
+                            <tr>
+                                <td class="info-cell"><span class="label">Lugar Nac.:</span> {{ perfil.lugarnacimiento }}</td>
+                                <td class="info-cell"><span class="label">Disponibilidad:</span> Inmediata</td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+                <td style="width: 25%; text-align: right; vertical-align: top;">
+                    {% if perfil_foto_url %}
+                        <img src="{{ perfil_foto_url }}" class="photo-frame">
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section-header">Experiencia Laboral</div>
+    {% for exp in experiencias %}
+    <table class="main-table">
+        <tr>
+            <td class="left-col">{{ exp.periodo_gestion }}</td>
+            <td class="right-col">
+                <div class="item-title">{{ exp.cargodesempenado }}</div>
+                <div class="item-subtitle">{{ exp.nombrempresa }}</div>
+            </td>
+        </tr>
+    </table>
+    {% endfor %}
+
+    <div class="section-header">Productos</div>
+    
+    {% for prod in laborales %}
+    <table class="main-table">
+        <tr>
+            <td class="left-col" style="color: #002d5e;">PRODUCTOS LABORALES</td>
+            <td class="right-col">
+                <div class="item-title">{{ prod.nombreproducto }}</div>
+            </td>
+        </tr>
+    </table>
+    {% endfor %}
+
+    {% for pro in academicos %}
+    <table class="main-table">
+        <tr>
+            <td class="left-col" style="color: #002d5e;">PRODUCTOS ACADÉMICOS</td>
+            <td class="right-col">
+                <div class="item-title">{{ pro.nombrerecurso }}</div>
+            </td>
+        </tr>
+    </table>
+    {% endfor %}
+
+    <div class="section-header">Cursos y Capacitaciones</div>
+    {% for curso in cursos %}
+    <table class="main-table">
+        <tr>
+            <td class="left-col">{{ curso.totalhoras }} Horas</td>
+            <td class="right-col">
+                <div class="item-title">{{ curso.nombrecurso }}</div>
+                <div class="item-subtitle">{{ curso.entidadpatrocinadora }}</div>
+            </td>
+        </tr>
+    </table>
+    {% endfor %}
+
+    {% if reconocimientos %}
+    <div class="section-header">Reconocimientos</div>
+    {% for rec in reconocimientos %}
+    <table class="main-table">
+        <tr>
+            <td class="left-col">{{ rec.fechareconocimiento|date:"Y" }}</td>
+            <td class="right-col">
+                <div class="item-title">{{ rec.tiporeconocimiento }}</div>
+            </td>
+        </tr>
+    </table>
+    {% endfor %}
+    {% endif %}
+
+    <div id="footerContent" class="footer">
+        Curriculum Vitae — {{ perfil.nombres }} {{ perfil.apellidos }} — Página <pdf:pagenumber>
+    </div>
+
+</body>
+</html>

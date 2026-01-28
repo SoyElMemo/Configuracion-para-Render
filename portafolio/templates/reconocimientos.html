@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid mt-4">
+    <h3 class="mb-4 text-primary fw-bold"><i class="bi bi-trophy me-2"></i> Reconocimientos y Premios</h3>
+    <div class="row row-cols-1 g-4">
+        {% for item in items %}
+        <div class="col">
+            <div class="card shadow-sm h-100 border-start border-4 border-warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title text-dark fw-bold mb-1" style="cursor:pointer;" 
+                                data-bs-toggle="modal" data-bs-target="#modalRec{{ item.idreconocimiento }}">
+                                {{ item.tiporeconocimiento }}
+                            </h5>
+                            <p class="mb-0 text-muted">{{ item.entidadpatrocinadora }}</p>
+                        </div>
+                        <button class="btn btn-sm btn-outline-warning text-dark shadow-sm" data-bs-toggle="modal" 
+                                data-bs-target="#modalRec{{ item.idreconocimiento }}">
+                            Ver detalle completo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modalRec{{ item.idreconocimiento }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content border-0">
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title fw-bold"><i class="bi bi-award-fill me-2"></i>Ficha de Reconocimiento</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12 text-center mb-3">
+                                <h4 class="fw-bold text-dark">{{ item.tiporeconocimiento }}</h4>
+                                <p class="text-muted fs-5">{{ item.entidadpatrocinadora }}</p>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6 border-end">
+                                <h6 class="fw-bold text-primary border-bottom pb-2">Datos del Galardón</h6>
+                                <p><strong><i class="bi bi-calendar-event"></i> Fecha:</strong> {{ item.fechareconocimiento|date:"d/m/Y" }}</p>
+                                <p><strong><i class="bi bi-building"></i> Entidad:</strong> {{ item.entidadpatrocinadora }}</p>
+                                <hr>
+                                <h6><strong><i class="bi bi-info-circle"></i> Descripción:</strong></h6>
+                                <p class="text-muted">{{ item.descripcionreconocimiento|linebreaks|default:"Sin descripción." }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="fw-bold text-primary border-bottom pb-2">Referencias de Validación</h6>
+                                {% if item.nombrecontactoauspicia %}
+                                <div class="alert alert-light border">
+                                    <p class="mb-1"><strong>Contacto:</strong> {{ item.nombrecontactoauspicia }}</p>
+                                    {% if item.telefonocontactoauspicia %}
+                                    <p class="mb-0"><strong>Teléfono:</strong> {{ item.telefonocontactoauspicia }}</p>
+                                    {% endif %}
+                                </div>
+                                {% else %}
+                                <p class="text-muted small">No hay contacto de referencia.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if item.rutacertificado %}
+                        <div class="mt-4">
+                            <a href="{{ item.rutacertificado.url }}" target="_blank" class="btn btn-danger w-100 py-2 fw-bold">
+                                <i class="bi bi-file-earmark-pdf"></i> VER CERTIFICADO ORIGINAL (PDF)
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid mt-4">
+    <h3 class="mb-4 text-primary fw-bold"><i class="bi bi-briefcase-fill me-2"></i> Experiencia Laboral</h3>
+    
+    <div class="row row-cols-1 g-4">
+        {% for item in items %}
+        <div class="col">
+            <div class="card shadow-sm h-100 border-start border-4 border-primary">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="fw-bold mb-1 text-dark">{{ item.nombrempresa }}</h5>
+                        <p class="text-primary mb-0">{{ item.cargodesempenado }}</p>
+                    </div>
+                    <button class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm" data-bs-toggle="modal" 
+                            data-bs-target="#modalExp{{ item.idexperiencilaboral }}">
+                        Ver ficha completa
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modalExp{{ item.idexperiencilaboral }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content border-0 shadow-lg">
+                    <div class="modal-header bg-dark text-white">
+                        <h5 class="modal-title fw-bold"><i class="bi bi-file-earmark-person me-2"></i>Detalle de Experiencia</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    
+                    <div class="modal-body p-4">
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-uppercase text-muted fw-bold small mb-3 border-bottom pb-2">Identificación del Puesto</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <p class="mb-1 text-muted small">Nombre de la Empresa</p>
+                                        <p class="fw-bold fs-5 text-dark"><i class="bi bi-building me-2 text-primary"></i>{{ item.nombrempresa }}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="mb-1 text-muted small">Cargo Desempeñado</p>
+                                        <p class="fw-bold fs-5 text-primary"><i class="bi bi-person-badge me-2 text-primary"></i>{{ item.cargodesempenado }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6 border-end">
+                                <h6 class="text-uppercase text-muted fw-bold small mb-3 border-bottom pb-2">Ubicación y Periodo</h6>
+                                <p class="mb-2"><strong><i class="bi bi-geo-alt me-2"></i>Sede:</strong> {{ item.lugarempresa }}</p>
+                                <p class="mb-2"><strong><i class="bi bi-calendar-range me-2"></i>Tiempo de Gestión:</strong> {{ item.periodo_gestion }}</p>
+                                {% if item.sitiowebempresa %}
+                                <p class="mb-2"><strong><i class="bi bi-globe me-2"></i>Sitio Web:</strong> <a href="{{ item.sitiowebempresa }}" target="_blank">{{ item.sitiowebempresa }}</a></p>
+                                {% endif %}
+                                {% if item.emailempresa %}
+                                <p class="mb-2"><strong><i class="bi bi-envelope me-2"></i>Correo:</strong> {{ item.emailempresa }}</p>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <h6 class="text-uppercase text-muted fw-bold small mb-3 border-bottom pb-2">Referencia de Contacto</h6>
+                                {% if item.nombrecontactoempresarial %}
+                                    <p class="mb-2"><strong><i class="bi bi-person-check me-2"></i>Nombre:</strong> {{ item.nombrecontactoempresarial }}</p>
+                                    {% if item.telefonocontactoempresarial %}
+                                    <p class="mb-2"><strong><i class="bi bi-telephone me-2"></i>Teléfono:</strong> {{ item.telefonocontactoempresarial }}</p>
+                                    {% endif %}
+                                {% else %}
+                                    <p class="text-muted small italic">Sin contacto de referencia registrado.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h6 class="text-uppercase text-muted fw-bold small mb-2 border-bottom pb-2">Descripción de Funciones</h6>
+                            <div class="bg-light p-3 rounded border shadow-sm">
+                                {{ item.descripcionfunciones|linebreaks|default:"No se detallaron las funciones específicas." }}
+                            </div>
+                        </div>
+
+                        {% if item.rutacertificado %}
+                        <div class="d-grid mt-4">
+                            <a href="{{ item.rutacertificado.url }}" target="_blank" class="btn btn-outline-danger btn-lg shadow-sm">
+                                <i class="bi bi-file-earmark-pdf-fill me-2"></i>Descargar Certificado de Trabajo
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="modal-footer bg-light border-0">
+                        <button type="button" class="btn btn-secondary px-4 shadow-sm" data-bs-dismiss="modal">Cerrar Ficha</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="text-muted">
+                <i class="bi bi-folder-x display-1"></i>
+                <p class="mt-3 fs-5">No hay experiencias laborales que mostrar.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Portafolio - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        .sidebar { position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; background: #212529; color: white; padding: 0; overflow-y: auto; }
+        .sidebar a { color: #adb5bd; text-decoration: none; padding: 12px 20px; display: block; }
+        .sidebar a:hover, .sidebar a.active { background: #343a40; color: white; border-left: 4px solid #0d6efd; }
+        .content { padding: 20px; background: #f8f9fa; min-height: 100vh; margin-left: 16.666667%; }
+        @media (max-width: 768px) { .sidebar { position: relative; height: auto; } .content { margin-left: 0; } }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-3 col-lg-2 sidebar shadow">
+                <h4 class="text-center mt-4 mb-4 fw-bold text-primary">MI PANEL</h4>
+                <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                    <i class="bi bi-person me-2"></i> Perfil
+                </a>
+                <a href="{% url 'experiencia' %}" class="{% if request.resolver_match.url_name == 'experiencia' %}active{% endif %}">
+                    <i class="bi bi-briefcase me-2"></i> Experiencia
+                </a>
+                <a href="{% url 'cursos' %}" class="{% if request.resolver_match.url_name == 'cursos' %}active{% endif %}">
+                    <i class="bi bi-mortarboard me-2"></i> Cursos
+                </a>
+                <a href="{% url 'reconocimientos' %}" class="{% if request.resolver_match.url_name == 'reconocimientos' %}active{% endif %}">
+                    <i class="bi bi-award me-2"></i> Reconocimientos
+                </a>
+                <a href="{% url 'productos' %}" class="{% if request.resolver_match.url_name == 'productos' %}active{% endif %}">
+                    <i class="bi bi-journal-check me-2"></i> Productos
+                </a>
+                <a href="{% url 'venta' %}" class="{% if request.resolver_match.url_name == 'venta' %}active{% endif %}">
+                    <i class="bi bi-shop me-2"></i> Garage
+                </a>
+                <hr class="mx-3 border-secondary">
+                <a href="#" class="text-info" data-bs-toggle="modal" data-bs-target="#modalDescarga">
+                    <i class="bi bi-file-pdf me-2"></i> Descargar CV
+                </a>
+            </nav>
+
+            <main class="col-md-9 col-lg-10 content">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalDescarga" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold">Personalizar PDF</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="{% url 'descargar_pdf' %}" method="GET">
+                    <div class="modal-body p-4" style="max-height: 400px; overflow-y: auto;">
+                        <p class="text-muted small mb-3">Marca los elementos que deseas incluir:</p>
+                        
+                        <h6 class="fw-bold text-primary">Experiencia Laboral</h6>
+                        {% for item in todas_exp %}
+                        <div class="form-check small mb-1">
+                            <input class="form-check-input" type="checkbox" name="chk_exp" value="{{ item.idexperiencilaboral }}" id="e{{ item.idexperiencilaboral }}" checked>
+                            <label class="form-check-label" for="e{{ item.idexperiencilaboral }}">{{ item.cargodesempenado }} en {{ item.nombrempresa }}</label>
+                        </div>
+                        {% endfor %}
+
+                        <h6 class="fw-bold text-primary mt-3">Cursos / Formación</h6>
+                        {% for item in todos_cur %}
+                        <div class="form-check small mb-1">
+                            <input class="form-check-input" type="checkbox" name="chk_cur" value="{{ item.idcursorealizado }}" id="c{{ item.idcursorealizado }}" checked>
+                            <label class="form-check-label" for="c{{ item.idcursorealizado }}">{{ item.nombrecurso }}</label>
+                        </div>
+                        {% endfor %}
+
+                        <h6 class="fw-bold text-primary mt-3">Proyectos Académicos</h6>
+                        {% for item in todos_pro %}
+                        <div class="form-check small mb-1">
+                            <input class="form-check-input" type="checkbox" name="chk_pro" value="{{ item.idproductoacademico }}" id="p{{ item.idproductoacademico }}" checked>
+                            <label class="form-check-label" for="p{{ item.idproductoacademico }}">{{ item.nombrerecurso }}</label>
+                        </div>
+                        {% endfor %}
+
+                        <h6 class="fw-bold text-primary mt-3">Reconocimientos</h6>
+                        {% for item in todos_rec %}
+                        <div class="form-check small mb-1">
+                            <input class="form-check-input" type="checkbox" name="chk_rec" value="{{ item.idreconocimiento }}" id="r{{ item.idreconocimiento }}" checked>
+                            <label class="form-check-label" for="r{{ item.idreconocimiento }}">{{ item.tiporeconocimiento }}</label>
+                        </div>
+                        {% endfor %}
+
+                        <h6 class="fw-bold text-primary mt-3">Productos Laborales</h6>
+                        {% for item in todos_pro_lab %}
+                        <div class="form-check small mb-1">
+                            <input class="form-check-input" type="checkbox" name="chk_pro_lab" value="{{ item.idproductoslaborales }}" id="pl{{ item.idproductoslaborales }}" checked>
+                            <label class="form-check-label" for="pl{{ item.idproductoslaborales }}">{{ item.nombreproducto }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="modal-footer border-0 d-grid gap-2">
+                        <button type="submit" name="tipo" value="personalizado" class="btn btn-warning fw-bold">Generar Selección</button>
+                        <button type="submit" name="tipo" value="todo" class="btn btn-primary fw-bold">Descargar Completo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
