@@ -73,13 +73,11 @@ class ExperienciaLaboral(models.Model):
         super().clean()
         # VALIDACIÓN RAZONABLE: No puede trabajar antes de nacer + 14 años
         nacimiento = self.idperfilconqueestaactivo.fechanacimiento
-        if self.fechainiciogestion and nacimiento:
-            if self.fechainiciogestion.year < (nacimiento.year + 14):
-                raise ValidationError(f'Incoherencia: Según la fecha de nacimiento ({nacimiento.year}), el usuario no podía trabajar en {self.fechainiciogestion.year}.')
+        if self.fechainiciogestion and nacimiento and self.fechainiciogestion.year < (nacimiento.year + 14):
+            raise ValidationError(f'Incoherencia: Según la fecha de nacimiento ({nacimiento.year}), el usuario no podía trabajar en {self.fechainiciogestion.year}.')
 
-        if self.fechainiciogestion and self.fechafingestion:
-            if self.fechafingestion < self.fechainiciogestion:
-                raise ValidationError({'fechafingestion': 'La fecha de fin no puede ser anterior al inicio.'})
+        if self.fechainiciogestion and self.fechafingestion and self.fechafingestion < self.fechainiciogestion:
+            raise ValidationError({'fechafingestion': 'La fecha de fin no puede ser anterior al inicio.'})
 
 # --- 3. RECONOCIMIENTOS ---
 class Reconocimientos(models.Model):
@@ -111,9 +109,8 @@ class CursosRealizados(models.Model):
     activarparaqueseveaenfront = models.BooleanField(default=True)
 
     def clean(self):
-        if self.fechainicio and self.fechafin:
-            if self.fechafin < self.fechainicio:
-                raise ValidationError({'fechafin': 'La fecha de fin del curso no puede ser anterior al inicio.'})
+        if self.fechainicio and self.fechafin and self.fechafin < self.fechainicio:
+            raise ValidationError({'fechafin': 'La fecha de fin del curso no puede ser anterior al inicio.'})
 
 # --- 5. PRODUCTOS ACADEMICOS ---
 class ProductosAcademicos(models.Model):
