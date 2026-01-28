@@ -10,12 +10,17 @@ import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # --- SEGURIDAD ---
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-tu-clave-aqui')
+SECRET_KEY = os.environ.get('SECRET_KEY')
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY environment variable is not set. Set it in Render dashboard.")
 
 # En Render, DEBUG debe ser False para que Cloudinary tome el control de los estáticos
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['*']
+# Configurar ALLOWED_HOSTS para Render
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
+if not DEBUG:
+    ALLOWED_HOSTS.extend(['127.0.0.1', 'localhost'])
 
 # --- APLICACIONES ---
 INSTALLED_APPS = [
