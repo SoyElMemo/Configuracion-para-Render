@@ -2,13 +2,13 @@
 # exit on error
 set -o errexit
 
-
 pip install -r requirements.txt
 
+# Recopilar estáticos primero
+python manage.py collectstatic --noinput
 
+# Aplicar migraciones
 python manage.py migrate
 
-# ESTA LÍNEA ES LA NUEVA: Carga los datos de la carpeta fixtures
-python manage.py loaddata fixtures/datos.json
-
-python manage.py collectstatic --noinput
+# CARGAR DATOS (Agregamos --exclude para evitar el error de duplicados)
+python manage.py loaddata fixtures/datos.json --exclude auth.permission --exclude contenttypes
