@@ -38,13 +38,11 @@ INSTALLED_APPS = [
     'portafolio',
 ]
 
-# ESTA ES LA CLAVE: Asegúrate de que estas dos líneas existan
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    ##'whitenoise.middleware.WhiteNoiseMiddleware', # <--- OBLIGATORIO para Render
+    'whitenoise.middleware.WhiteNoiseMiddleware', # <--- OBLIGATORIO para Render
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
