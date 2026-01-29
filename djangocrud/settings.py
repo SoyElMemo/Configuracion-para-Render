@@ -22,20 +22,25 @@ CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'http://localhost:
 CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in CSRF_TRUSTED_ORIGINS]
 
 
-# Application definition
+# settings.py
+
 INSTALLED_APPS = [
-    'cloudinary_storage',
+    'cloudinary_storage',    # 1. DEBE IR PRIMERO
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_countries',
-    'cities_light',
+    'django_countries',      # Para que Cloudinary guarde las banderas
+    'cities_light',          # Para que Cloudinary guarde los datos de ciudades
     'cloudinary',
     'portafolio',
 ]
+
+# ESTA ES LA CLAVE: Asegúrate de que estas dos líneas existan
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -121,3 +126,6 @@ CLOUDINARY_STORAGE = {
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
+
+CITIES_LIGHT_APP_NAME = 'cities_light'
+# Esto evita que intente importar todo cada vez si no es necesario
