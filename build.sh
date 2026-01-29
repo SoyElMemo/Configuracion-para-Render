@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-# Script de build para Render.com
-
+# exit on error
 set -o errexit
 
-# Instalar dependencias
+
 pip install -r requirements.txt
 
-# Hacer migraciones
+
 python manage.py migrate
 
-# Recopilar archivos estáticos
+# ESTA LÍNEA ES LA NUEVA: Carga los datos de la carpeta fixtures
+python manage.py loaddata fixtures/datos.json
+
 python manage.py collectstatic --noinput
