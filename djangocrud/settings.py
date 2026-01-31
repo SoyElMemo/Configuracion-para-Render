@@ -55,7 +55,10 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'portafolio.context_processors.pdf_data',
+                # Eliminado: 'portafolio.context_processors.pdf_data'
+                # Las queries que hacía ese context_processor ya se manejan
+                # directamente en home() de views.py, así no se ejecutan
+                # en cada request de la app.
             ],
         },
     },

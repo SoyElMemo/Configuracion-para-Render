@@ -9,7 +9,6 @@ from .models import (
 
 def home(request):
     perfil = DatosPersonales.objects.first()
-    # Traemos todo para que el recuadro del Modal pueda listar cada ítem
     todas_exp = ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil)
     todos_cur = CursosRealizados.objects.filter(idperfilconqueestaactivo=perfil)
     todos_rec = Reconocimientos.objects.filter(idperfilconqueestaactivo=perfil)
@@ -46,7 +45,6 @@ def exportar_pdf(request):
         cursos = CursosRealizados.objects.filter(idcursorealizado__in=ids_cur)
         reconocimientos = Reconocimientos.objects.filter(idreconocimiento__in=ids_rec)
         academicos = ProductosAcademicos.objects.filter(idproductoacademico__in=ids_pro)
-        # AQUÍ SE DEFINE LA VARIABLE QUE TE DABA ERROR:
         laborales = ProductosLaborales.objects.filter(idproductoslaborales__in=ids_pro_lab)
         titulo_doc = "Currículum Vitae Personalizado"
     else:
@@ -54,9 +52,19 @@ def exportar_pdf(request):
         cursos = CursosRealizados.objects.filter(idperfilconqueestaactivo=perfil)
         reconocimientos = Reconocimientos.objects.filter(idperfilconqueestaactivo=perfil)
         academicos = ProductosAcademicos.objects.filter(idperfilconqueestaactivo=perfil)
-        # AQUÍ TAMBIÉN SE DEFINE PARA LA DESCARGA COMPLETA:
         laborales = ProductosLaborales.objects.filter(idperfilconqueestaactivo=perfil)
         titulo_doc = "Currículum Vitae"
+
+    # --- FIX: URL de foto para el PDF ---
+    # Cloudinary ya devuelve URLs absolutas (https://res.cloudinary.com/...)
+    # build_absolute_uri() solo se necesita cuando la URL es relativa (desarrollo local)
+    perfil_foto_url = None
+    if perfil and perfil.foto:
+        foto_url = perfil.foto.url
+        if foto_url.startswith('http'):
+            perfil_foto_url = foto_url  # Ya es absoluta (Cloudinary en producción)
+        else:
+            perfil_foto_url = request.build_absolute_uri(foto_url)  # Relativa (local con SQLite)
 
     context = {
         'perfil': perfil,
@@ -67,7 +75,7 @@ def exportar_pdf(request):
         'laborales': laborales,
         'titulo_doc': titulo_doc,
         'user': request.user,
-        'perfil_foto_url': request.build_absolute_uri(perfil.foto.url) if perfil and perfil.foto else None
+        'perfil_foto_url': perfil_foto_url
     }
     
     response = HttpResponse(content_type='application/pdf')
@@ -79,7 +87,7 @@ def exportar_pdf(request):
     
     return response
 
-# Vistas de navegación (se mantienen igual)
+# Vistas de navegación
 def vista_experiencia(request):
     perfil = DatosPersonales.objects.first()
     items = ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
