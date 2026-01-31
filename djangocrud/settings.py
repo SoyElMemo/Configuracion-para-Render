@@ -12,7 +12,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-njto&57y4+o$e4iwgmlo=
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 # Soporta Render y localhost
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1, .onrender.com').split(',')
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'configuracion-para-render.onrender.com']
 ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS if host.strip()]
 
 CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000').split(',')
