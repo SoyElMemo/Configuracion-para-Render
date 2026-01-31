@@ -86,6 +86,10 @@ USE_TZ = True
 # --- ARCHIVOS ESTÁTICOS (CSS, JS) ---
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# Agrega esta línea si no la tienes:
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 # Usamos WhiteNoise para estáticos por velocidad
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
