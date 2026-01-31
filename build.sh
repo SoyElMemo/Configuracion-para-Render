@@ -12,4 +12,4 @@ python manage.py collectstatic --noinput
 python manage.py migrate
 
 # Cargar los datos limpios (sin logs ni basura)
-python manage.py loaddata fixtures/datos.json
+#python manage.py loaddata fixtures/datos.json
