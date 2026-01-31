@@ -25,8 +25,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
     'cloudinary',
+    'django.contrib.staticfiles',
     'portafolio',
     'django_countries',
     'cities_light',
@@ -101,6 +101,7 @@ CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+    'STATICFILES_STORAGE': 'django.contrib.staticfiles.storage.StaticFilesStorage', # <--- AÑADE ESTA LÍNEA
 }
 
 MEDIA_URL = '/media/'

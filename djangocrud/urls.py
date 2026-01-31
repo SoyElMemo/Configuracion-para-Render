@@ -8,6 +8,6 @@ urlpatterns = [
     path('', include('portafolio.urls')),
 ]
 
-# --- MODIFICACIÓN: Esto permite ver imágenes en Render (Cloudinary) ---
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+# Solo sirve archivos MEDIA (fotos) de esta forma:
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
