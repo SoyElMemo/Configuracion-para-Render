@@ -1,48 +1,40 @@
-"""
-Django settings for djangocrud project.
-"""
-
-from pathlib import Path
 import os
-import dj_database_url # <--- Asegúrate de haber hecho: pip install dj-database-url
+from pathlib import Path
+import dj_database_url
+import cloudinary
+import cloudinary.api
+import cloudinary.uploader
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # --- SEGURIDAD ---
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-njto&57y4+o$e4iwgmlo=(ubi@0r=ckz75+q)3@c@dli6lmo65')
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-# ALLOWED_HOSTS - Soporta Render y localhost
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
-ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS]
+# Soporta Render y localhost
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1, .onrender.com').split(',')
+ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS if host.strip()]
 
-# CSRF - Permitir Render
 CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000').split(',')
-CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in CSRF_TRUSTED_ORIGINS]
-
-
-# settings.py
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in CSRF_TRUSTED_ORIGINS if origin.strip()]
 
 INSTALLED_APPS = [
-    'cloudinary_storage',    # 1. DEBE IR PRIMERO
+    'cloudinary_storage', # DEBE IR PRIMERO
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_countries',      # Para que Cloudinary guarde las banderas
-    'cities_light',          # Para que Cloudinary guarde los datos de ciudades
     'cloudinary',
     'portafolio',
+    'django_countries',
+    'cities_light',
 ]
-
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # <--- OBLIGATORIO para Render
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Para archivos CSS/JS
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -72,18 +64,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'djangocrud.wsgi.application'
 
-
-# --- BASE DE DATOS HÍBRIDA (SQLite local / PostgreSQL en Render) ---
 DATABASES = {
     'default': dj_database_url.config(
-        # Si encuentra DATABASE_URL en Render, la usa. Si no, usa SQLite local.
         default=os.environ.get('DATABASE_URL', f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
         conn_max_age=600
     )
 }
 
-
-# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -91,33 +78,20 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
-# Internationalization
 LANGUAGE_CODE = 'es-ec'
 TIME_ZONE = 'America/Guayaquil'
 USE_I18N = True
 USE_TZ = True
 
-
-# --- ARCHIVOS ESTÁTICOS Y MEDIA (Configuración Pro para Render) ---
+# --- ARCHIVOS ESTÁTICOS (CSS, JS) ---
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# Usamos WhiteNoise para estáticos por velocidad
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Cambiamos WhiteNoise por Cloudinary para que el Admin recupere su diseño
-STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
+# --- ARCHIVOS MEDIA (FOTOS) ---
+# Forzamos Cloudinary para las imágenes subidas
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-FIXTURE_DIRS = [os.path.join(BASE_DIR, 'fixtures')]
-
-
-
-
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
@@ -125,5 +99,8 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
 
-CITIES_LIGHT_APP_NAME = 'cities_light'
-# Esto evita que intente importar todo cada vez si no es necesario
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+FIXTURE_DIRS = [os.path.join(BASE_DIR, 'fixtures')]
