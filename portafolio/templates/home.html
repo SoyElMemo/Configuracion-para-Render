@@ -6,11 +6,15 @@
             <div class="row">
                 <div class="col-md-3 text-center border-end">
                     {% if perfil.foto %}
-                        <img src="{{ persona.foto.url }}" class="rounded-circle border" style="width: 180px; height: 180px; object-fit: cover;">
+                        <img src="{{ perfil.foto.url }}" class="rounded-circle border" style="width: 180px; height: 180px; object-fit: cover;">
+                    {% else %}
+                        <img src="https://ui-avatars.com/api/?name={{ perfil.nombres }}+{{ perfil.apellidos }}&size=180" class="rounded-circle border">
                     {% endif %}
+                    
                     <h3 class="mt-2 text-primary">{{ perfil.nombres.split.0 }} {{ perfil.apellidos.split.0 }}</h3>
                     <p class="badge bg-secondary"><i class="bi bi-person-circle"></i> Sexo: {{ perfil.get_sexo_display }}</p>
                 </div>
+                
                 <div class="col-md-9 position-relative">
                     <div class="position-absolute top-0 end-0 p-2">
                         <a href="/admin/portafolio/datospersonales/{{ perfil.idperfil }}/change/" class="btn btn-sm btn-outline-danger shadow-sm">
