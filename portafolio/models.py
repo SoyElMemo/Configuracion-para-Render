@@ -2,6 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from datetime import date
 from django_countries.fields import CountryField
+from cloudinary_storage.storage import MediaCloudinaryStorage
 
 # --- VALIDACIONES ---
 def validar_fecha_nacimiento(value):
@@ -14,7 +15,8 @@ def validar_fecha_nacimiento(value):
 # --- 1. DATOS PERSONALES ---
 class DatosPersonales(models.Model):
     idperfil = models.AutoField(primary_key=True)
-    foto = models.ImageField(upload_to='perfil/', null=True, blank=True)
+    # CORREGIDO: Se añade storage para guardar en Cloudinary
+    foto = models.ImageField(upload_to='perfil/', storage=MediaCloudinaryStorage(), null=True, blank=True)
     descripcionperfil = models.TextField(max_length=500, null=True, blank=True)
     perfilactivo = models.IntegerField(default=1)
     
@@ -59,7 +61,8 @@ class ExperienciaLaboral(models.Model):
     fechafingestion = models.DateField(null=True, blank=True)
     
     descripcionfunciones = models.TextField(null=True, blank=True)
-    rutacertificado = models.FileField(upload_to='certificados_laborales/', null=True, blank=True)
+    # CORREGIDO: Se añade storage para guardar en Cloudinary
+    rutacertificado = models.FileField(upload_to='certificados_laborales/', storage=MediaCloudinaryStorage(), null=True, blank=True)
     activarparaqueseveaenfront = models.BooleanField(default=True)
 
     @property
@@ -89,7 +92,8 @@ class Reconocimientos(models.Model):
     entidadpatrocinadora = models.CharField(max_length=100, null=True, blank=True)
     nombrecontactoauspicia = models.CharField(max_length=100, null=True, blank=True)
     telefonocontactoauspicia = models.CharField(max_length=20, null=True, blank=True)
-    rutacertificado = models.FileField(upload_to='certificados_reconocimientos/', null=True, blank=True)
+    # CORREGIDO: Se añade storage para guardar en Cloudinary
+    rutacertificado = models.FileField(upload_to='certificados_reconocimientos/', storage=MediaCloudinaryStorage(), null=True, blank=True)
     activarparaqueseveaenfront = models.BooleanField(default=True)
 
 # --- 4. CURSOS REALIZADOS ---
@@ -105,7 +109,8 @@ class CursosRealizados(models.Model):
     nombrecontactoauspicia = models.CharField(max_length=100, null=True, blank=True)
     telefonocontactoauspicia = models.CharField(max_length=20, null=True, blank=True)
     emailempresapatrocinadora = models.EmailField(null=True, blank=True)
-    rutacertificado = models.FileField(upload_to='certificados_cursos/', null=True, blank=True)
+    # CORREGIDO: Se añade storage para guardar en Cloudinary
+    rutacertificado = models.FileField(upload_to='certificados_cursos/', storage=MediaCloudinaryStorage(), null=True, blank=True)
     activarparaqueseveaenfront = models.BooleanField(default=True)
 
     def clean(self):
@@ -136,7 +141,8 @@ class VentaGarage(models.Model):
     idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, on_delete=models.CASCADE)
     nombreproducto = models.CharField(max_length=100)
     valordelbien = models.DecimalField(max_digits=10, decimal_places=2)
-    foto = models.ImageField(upload_to='garage/', null=True, blank=True)
+    # CORREGIDO: Se añade storage para guardar en Cloudinary
+    foto = models.ImageField(upload_to='garage/', storage=MediaCloudinaryStorage(), null=True, blank=True)
     estadoproducto = models.CharField(max_length=20, choices=[('Bueno', 'Bueno'), ('Regular', 'Regular')], default='Bueno')
     descripcion = models.TextField(null=True, blank=True)
     activarparaqueseveaenfront = models.BooleanField(default=True)
