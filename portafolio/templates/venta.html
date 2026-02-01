@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% block title %}Venta de Garage | Ofertas{% endblock %}
+
 {% block content %}
 <div class="container-fluid mt-4">
     <h3 class="mb-4 text-primary fw-bold"><i class="bi bi-shop me-2"></i> Venta de Garage</h3>
@@ -6,10 +8,17 @@
         {% for item in items %}
         <div class="col">
             <div class="card shadow-sm h-100 border-0">
+                <div style="height: 250px; background-color: #eee;" class="rounded-top">
                 {% if item.foto %}
-                <img src="{{ item.foto.url }}" class="card-img-top" style="height: 250px; object-fit: cover; cursor: pointer;"
-                     data-bs-toggle="modal" data-bs-target="#modalVenta{{ item.idventagarage }}">
+                    <img src="{{ item.foto.url }}" class="card-img-top" style="height: 100%; object-fit: cover; cursor: pointer;"
+                         data-bs-toggle="modal" data-bs-target="#modalVenta{{ item.idventagarage }}">
+                {% else %}
+                    <div class="h-100 d-flex align-items-center justify-content-center text-muted">
+                        <i class="bi bi-camera display-4"></i>
+                    </div>
                 {% endif %}
+                </div>
+
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
@@ -20,7 +29,7 @@
                             {{ item.estadoproducto }}
                         </span>
                     </div>
-                    <button class="btn btn-outline-primary w-100 mt-3 fw-bold" 
+                    <button class="btn btn-outline-primary w-100 mt-3 fw-bold shadow-sm" 
                             data-bs-toggle="modal" data-bs-target="#modalVenta{{ item.idventagarage }}">
                         Ver detalles
                     </button>
@@ -41,7 +50,7 @@
                                 {% if item.foto %}
                                 <img src="{{ item.foto.url }}" class="img-fluid rounded shadow-sm border mb-3">
                                 {% endif %}
-                                <div class="bg-light p-3 rounded border text-center mb-3">
+                                <div class="bg-light p-3 rounded border text-center mb-3 shadow-sm">
                                     <h3 class="text-success fw-bold mb-0">${{ item.valordelbien }}</h3>
                                     <small class="text-muted">Precio Sugerido</small>
                                 </div>
@@ -52,32 +61,33 @@
                                     Estado: {{ item.estadoproducto }}
                                 </p>
                                 
-                                <h6 class="fw-bold text-primary mb-1"><i class="bi bi-card-text"></i> Descripción detallada:</h6>
+                                <h6 class="fw-bold text-primary mb-1"><i class="bi bi-card-text"></i> Descripción:</h6>
                                 <div class="p-3 bg-light rounded border mb-4 text-dark shadow-sm" style="min-height: 100px;">
-                                    {{ item.descripcion|linebreaksbr|default:"PC de buena calidad" }}
+                                    {{ item.descripcion|linebreaksbr|default:"Sin descripción adicional." }}
                                 </div>
 
                                 <div class="d-grid gap-2">
                                     {% if item.whatsapp %}
-                                    <a href="https://wa.me/{{ item.whatsapp|cut:' '|cut:'+' }}?text=Hola,%20estoy%20interesado%20en:%20{{ item.nombreproducto }}" 
+                                    <a href="https://api.whatsapp.com/send?phone={{ item.whatsapp|cut:' '|cut:'+'|cut:'-' }}&text=Hola,%20estoy%20interesado%20en:%20{{ item.nombreproducto }}" 
                                        target="_blank" class="btn btn-success btn-lg shadow-sm fw-bold">
                                         <i class="bi bi-whatsapp me-2"></i> Contactar por WhatsApp
                                     </a>
                                     {% else %}
-                                    <div class="alert alert-info py-2 small mb-0">
-                                        <i class="bi bi-info-circle"></i> WhatsApp no configurado. Para adquirir este bien, contacta al administrador.
+                                    <div class="alert alert-info py-2 small mb-0 shadow-sm text-center">
+                                        <i class="bi bi-info-circle"></i> Contacta al administrador para adquirir este producto.
                                     </div>
                                     {% endif %}
-                                </div>
-
-                                <div class="mt-3 text-center text-muted">
-                                    <small><i class="bi bi-shield-check"></i> Trato directo con el vendedor</small>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-cart-x display-1 text-muted"></i>
+            <p class="mt-2 text-muted">No hay productos disponibles en la venta de garage por ahora.</p>
         </div>
         {% endfor %}
     </div>
