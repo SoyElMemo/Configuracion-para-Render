@@ -61,7 +61,7 @@ class ExperienciaLaboral(models.Model):
     
     descripcionfunciones = models.TextField(null=True, blank=True)
     # CORREGIDO: Se añade storage para guardar en Cloudinary
-    rutacertificado = models.FileField(upload_to='certificados_laborales/', storage=RawMediaCloudinaryStorage(), null=True, blank=True)
+    rutacertificado = models.FileField(upload_to='certificados_laborales/', storage=RawMediaCloudinaryStorage(), max_length=500, null=True, blank=True)
     activarparaqueseveaenfront = models.BooleanField(default=True)
 
     @property
@@ -92,7 +92,7 @@ class Reconocimientos(models.Model):
     nombrecontactoauspicia = models.CharField(max_length=100, null=True, blank=True)
     telefonocontactoauspicia = models.CharField(max_length=20, null=True, blank=True)
     # CORREGIDO: Se añade storage para guardar en Cloudinary
-    rutacertificado = models.FileField(upload_to='certificados_reconocimientos/', storage=RawMediaCloudinaryStorage(), null=True, blank=True)
+    rutacertificado = models.FileField(upload_to='certificados_reconocimientos/', storage=RawMediaCloudinaryStorage(),max_length=500, null=True, blank=True)
     activarparaqueseveaenfront = models.BooleanField(default=True)
 
 # --- 4. CURSOS REALIZADOS ---
@@ -109,7 +109,7 @@ class CursosRealizados(models.Model):
     telefonocontactoauspicia = models.CharField(max_length=20, null=True, blank=True)
     emailempresapatrocinadora = models.EmailField(null=True, blank=True)
     # CORREGIDO: Se añade storage para guardar en Cloudinary
-    rutacertificado = models.FileField(upload_to='certificados_cursos/', storage=RawMediaCloudinaryStorage(), null=True, blank=True)
+    rutacertificado = models.FileField(upload_to='certificados_cursos/', storage=RawMediaCloudinaryStorage(), max_length=500, null=True, blank=True)
     activarparaqueseveaenfront = models.BooleanField(default=True)
 
     def clean(self):
