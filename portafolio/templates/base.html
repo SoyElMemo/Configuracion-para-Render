@@ -6,38 +6,32 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
-        /* MANTENEMOS TU ESTRUCTURA EXACTA */
+        /* ESTRUCTURA ORIGINAL PRESERVADA */
         .sidebar { position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; background: #212529; color: white; padding: 0; overflow-y: auto; }
         .sidebar a { color: #adb5bd; text-decoration: none; padding: 12px 20px; display: block; }
         .sidebar a:hover, .sidebar a.active { background: #343a40; color: white; border-left: 4px solid #0d6efd; }
-        .content { padding: 20px; background: #f8f9fa; min-height: 100vh; margin-left: 16.666667%; }
+        .content { padding: 20px; background: #f8f9fa; min-height: 100vh; margin-left: 16.666667%; transition: background-color 0.3s, color 0.3s; }
         
         @media (max-width: 768px) { 
             .sidebar { position: relative; height: auto; width: 100%; } 
             .content { margin-left: 0; width: 100%; } 
         }
 
-        /* CORRECCIÓN PROFESIONAL PARA MODO OSCURO */
-        /* Evita que se "laven" los colores de lo que ya es oscuro o de las fotos */
-        .darkmode--activated .sidebar, 
-        .darkmode--activated .modal-content,
-        .darkmode--activated b,
-        .darkmode--activated i,
-        .darkmode--activated img { 
-            isolation: isolate; 
-        }
+        /* MODO OSCURO REAL (SIN INVERTIR FOTOS) */
+        body.dark-mode { background-color: #121212; color: #f8f9fa; }
+        body.dark-mode .content { background-color: #1a1a1a !important; }
+        body.dark-mode .card { background-color: #242424 !important; color: white !important; border-color: #444; }
+        body.dark-mode .modal-content { background-color: #242424; color: white; }
+        body.dark-mode .text-muted { color: #aaa !important; }
+        body.dark-mode .list-group-item { background-color: #242424; color: white; border-color: #444; }
 
-        /* Estilo del contenedor del switch en el menú */
-        .darkmode-container {
-            padding: 20px;
-            margin-top: 20px;
-        }
-        
-        /* Aseguramos que el botón del widget no flote en cualquier lado */
-        .darkmode-layer, .darkmode-toggle { z-index: 500; }
+        /* Estilo del botón de cambio en el menú */
+        .theme-switch-wrapper { padding: 15px 20px; border-top: 1px solid #343a40; margin-top: 10px; }
+        .btn-theme { background: none; border: 1px solid #444; color: #adb5bd; width: 100%; padding: 8px; border-radius: 5px; transition: 0.3s; }
+        .btn-theme:hover { color: white; border-color: #0d6efd; }
     </style>
 </head>
-<body>
+<body class="">
     <div class="container-fluid">
         <div class="row">
             <nav class="col-md-3 col-lg-2 sidebar shadow">
@@ -68,8 +62,11 @@
                     <i class="bi bi-file-pdf me-2"></i> Descargar CV
                 </a>
 
-                <div class="darkmode-container text-center">
-                    </div>
+                <div class="theme-switch-wrapper">
+                    <button class="btn-theme" onclick="toggleTheme()">
+                        <i id="theme-icon" class="bi bi-moon-stars"></i> <span id="theme-text">Modo Oscuro</span>
+                    </button>
+                </div>
             </nav>
 
             <main class="col-md-9 col-lg-10 content">
@@ -139,25 +136,34 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
     
     <script>
-        const options = {
-            bottom: '32px', // default: '32px'
-            right: 'unset', // default: '32px'
-            left: '32px', // LO PONEMOS A LA IZQUIERDA
-            time: '0.5s', // default: '0.3s'
-            mixColor: '#fff', // default: '#fff'
-            backgroundColor: '#fff',  // default: '#fff'
-            buttonColorDark: '#100f2c',  // default: '#100f2c'
-            buttonColorLight: '#fff', // default: '#fff'
-            saveInCookies: true, // default: true,
-            label: '🌓', // default: ''
-            autoMatchOsTheme: true // default: true
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+                icon.className = 'bi bi-sun';
+                text.innerText = 'Modo Claro';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.className = 'bi bi-moon-stars';
+                text.innerText = 'Modo Oscuro';
+                localStorage.setItem('theme', 'light');
+            }
         }
 
-        const darkmode = new Darkmode(options);
-        darkmode.showWidget();
+        // Leer preferencia al cargar
+        window.onload = () => {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('theme-icon').className = 'bi bi-sun';
+                document.getElementById('theme-text').innerText = 'Modo Claro';
+            }
+        };
     </script>
 </body>
 </html>
