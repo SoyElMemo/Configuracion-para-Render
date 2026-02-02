@@ -8,125 +8,80 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     
     <style>
-        :root { --sidebar-width: 280px; }
-        body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        
-        /* Sidebar Styles */
+        /* Estilos fieles a tu captura original */
+        body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, sans-serif; }
         .sidebar { 
-            width: var(--sidebar-width); 
-            height: 100vh; 
-            position: fixed; 
-            background: #2c3e50; 
-            color: white; 
-            overflow-y: auto;
-            z-index: 1000;
+            width: 280px; height: 100vh; position: fixed; 
+            background: #2c3e50; color: white; z-index: 1000;
         }
-        .main-content { margin-left: var(--sidebar-width); padding: 20px; transition: all 0.3s; }
+        .main-content { margin-left: 280px; padding: 20px; }
+        .nav-link { color: #adb5bd !important; font-size: 1.1rem; padding: 12px 20px !important; }
+        .nav-link:hover, .nav-link.active { color: white !important; background: rgba(255,255,255,0.1); border-left: 4px solid #0d6efd; }
+        .brand-title { color: #ffc107; font-weight: bold; text-align: center; padding: 20px 0; font-size: 1.5rem; }
         
-        /* Darkmode Fixes */
-        .darkmode-ignore, img, .btn, .modal-content, .card, iframe { 
-            isolation: isolate; 
-        }
-        
-        @media (max-width: 768px) {
-            .sidebar { margin-left: calc(-1 * var(--sidebar-width)); }
-            .sidebar.active { margin-left: 0; }
-            .main-content { margin-left: 0; }
-        }
+        /* Evitar que el Darkmode arruine visuales */
+        .darkmode-ignore, img, .btn, .modal-content, .card, iframe { isolation: isolate; }
     </style>
 </head>
 <body>
 
-    <nav class="sidebar p-3 shadow">
-        <div class="text-center mb-4">
-            <h4 class="fw-bold text-warning">Mi Portafolio</h4>
-            <hr>
-        </div>
-        <ul class="nav flex-column gap-2">
-            <li class="nav-item">
-                <a href="{% url 'home' %}" class="nav-link text-white btn btn-outline-primary border-0 text-start">
-                    <i class="bi bi-house-door me-2"></i> Inicio
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{% url 'experiencia' %}" class="nav-link text-white btn btn-outline-primary border-0 text-start">
-                    <i class="bi bi-briefcase me-2"></i> Experiencia
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{% url 'cursos' %}" class="nav-link text-white btn btn-outline-primary border-0 text-start">
-                    <i class="bi bi-mortarboard me-2"></i> Cursos
-                </a>
-            </li>
-            <li class="nav-item mt-4">
-                <button type="button" class="btn btn-warning w-100 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalDescarga">
-                    <i class="bi bi-file-earmark-pdf-fill me-2"></i> Descargar CV
+    <nav class="sidebar shadow">
+        <div class="brand-title">MI PANEL</div>
+        <ul class="nav flex-column">
+            <li class="nav-item"><a href="{% url 'home' %}" class="nav-link"><i class="bi bi-person me-3"></i> Perfil</a></li>
+            <li class="nav-item"><a href="{% url 'experiencia' %}" class="nav-link"><i class="bi bi-briefcase me-3"></i> Experiencia</a></li>
+            <li class="nav-item"><a href="{% url 'cursos' %}" class="nav-link active"><i class="bi bi-mortarboard me-3"></i> Cursos</a></li>
+            <li class="nav-item"><a href="{% url 'reconocimientos' %}" class="nav-link"><i class="bi bi-award me-3"></i> Reconocimientos</a></li>
+            <li class="nav-item"><a href="{% url 'productos' %}" class="nav-link"><i class="bi bi-check2-square me-3"></i> Productos</a></li>
+            <li class="nav-item"><a href="{% url 'garage' %}" class="nav-link"><i class="bi bi-house me-3"></i> Garage</a></li>
+            
+            <li class="nav-item mt-5 px-3">
+                <button type="button" class="btn btn-warning w-100 fw-bold py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalDescarga">
+                    <i class="bi bi-file-earmark-pdf me-2"></i> Descargar CV
                 </button>
             </li>
         </ul>
     </nav>
 
     <main class="main-content">
-        {% block content %}
-        {% endblock %}
+        {% block content %}{% endblock %}
     </main>
 
-    <div class="modal fade" id="modalDescarga" tabindex="-1" aria-labelledby="modalDescargaLabel" aria-hidden="true">
+    <div class="modal fade" id="modalDescarga" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content border-0 shadow-lg">
+            <div class="modal-content border-0">
                 <div class="modal-header bg-dark text-white">
-                    <h5 class="modal-title fw-bold" id="modalDescargaLabel"><i class="bi bi-sliders me-2"></i> Personalizar mi CV</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title fw-bold">Personalizar PDF</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                
                 <form action="{% url 'descargar_pdf' %}" method="GET">
-                    <div class="modal-body p-4" style="max-height: 450px; overflow-y: auto;">
-                        <p class="text-muted small mb-4">Selecciona los elementos que deseas incluir en el documento generado:</p>
+                    <div class="modal-body p-4">
+                        <p class="text-muted small">Marca los elementos que deseas incluir:</p>
                         
-                        <h6 class="fw-bold text-primary border-bottom pb-2">Experiencia Laboral</h6>
-                        {% for item in todas_exp %}
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" name="chk_exp" value="{{ item.idexperiencilaboral }}" id="exp_{{ item.idexperiencilaboral }}" checked>
-                            <label class="form-check-label small" for="exp_{{ item.idexperiencilaboral }}">
-                                {{ item.cargodesempenado }} - {{ item.nombrempresa }}
-                            </label>
+                        <div class="mb-3">
+                            <h6 class="fw-bold text-primary">Experiencia Laboral</h6>
+                            {% for item in todas_exp %}
+                            <div class="form-check small">
+                                <input class="form-check-input" type="checkbox" name="chk_exp" value="{{ item.idexperiencilaboral }}" id="e{{ item.idexperiencilaboral }}" checked>
+                                <label class="form-check-label" for="e{{ item.idexperiencilaboral }}">{{ item.cargodesempenado }}</label>
+                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
 
-                        <h6 class="fw-bold text-primary border-bottom pb-2 mt-4">Formación y Cursos</h6>
-                        {% for item in todos_cur %}
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" name="chk_cur" value="{{ item.idcursorealizado }}" id="cur_{{ item.idcursorealizado }}" checked>
-                            <label class="form-check-label small" for="cur_{{ item.idcursorealizado }}">
-                                {{ item.nombrecurso }}
-                            </label>
+                        <div class="mb-3">
+                            <h6 class="fw-bold text-primary">Cursos / Formación</h6>
+                            {% for item in todos_cur %}
+                            <div class="form-check small">
+                                <input class="form-check-input" type="checkbox" name="chk_cur" value="{{ item.idcursorealizado }}" id="c{{ item.idcursorealizado }}" checked>
+                                <label class="form-check-label" for="c{{ item.idcursorealizado }}">{{ item.nombrecurso }}</label>
+                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
 
-                        <h6 class="fw-bold text-primary border-bottom pb-2 mt-4">Proyectos Académicos</h6>
-                        {% for item in todos_pro %}
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" name="chk_pro" value="{{ item.idproductoacademico }}" id="pro_{{ item.idproductoacademico }}" checked>
-                            <label class="form-check-label small" for="pro_{{ item.idproductoacademico }}">
-                                {{ item.nombrerecurso }}
-                            </label>
                         </div>
-                        {% endfor %}
-
-                        <h6 class="fw-bold text-primary border-bottom pb-2 mt-4">Reconocimientos</h6>
-                        {% for item in todos_rec %}
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" name="chk_rec" value="{{ item.idreconocimiento }}" id="rec_{{ item.idreconocimiento }}" checked>
-                            <label class="form-check-label small" for="rec_{{ item.idreconocimiento }}">
-                                {{ item.tiporeconocimiento }}
-                            </label>
-                        </div>
-                        {% endfor %}
-                    </div>
-
-                    <div class="modal-footer bg-light border-0 d-flex justify-content-between">
-                        <button type="submit" name="tipo" value="todo" class="btn btn-outline-secondary fw-bold px-4">Descargar Todo</button>
-                        <button type="submit" name="tipo" value="personalizado" class="btn btn-warning fw-bold px-4 shadow-sm">Generar Selección</button>
+                    <div class="modal-footer border-0 d-grid gap-2">
+                        <button type="submit" name="tipo" value="personalizado" class="btn btn-warning fw-bold">Generar Selección</button>
+                        <button type="submit" name="tipo" value="todo" class="btn btn-primary fw-bold">Descargar Completo</button>
                     </div>
                 </form>
             </div>
@@ -135,19 +90,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
-    
     <script>
-        // Configuración de Darkmode a la derecha
-        const options = {
-            bottom: '32px',
-            right: '32px', // Posicionado a la derecha
-            left: 'unset',
-            time: '0.3s',
-            label: '🌓',
-            saveInCookies: true
-        };
-
-        const darkmode = new Darkmode(options);
+        const darkmode = new Darkmode({
+            bottom: '32px', right: '32px', left: 'unset', label: '🌓', saveInCookies: true
+        });
         darkmode.showWidget();
     </script>
 </body>
