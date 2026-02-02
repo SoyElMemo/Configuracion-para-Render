@@ -6,11 +6,18 @@ from django.core.exceptions import ImproperlyConfigured
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # --- SEGURIDAD ---
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+# En local suele no existir la variable DEBUG, por defecto será True si no se encuentra
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-njto&57y4+o$e4iwgmlo=(ubi@0r=ckz75+q)3@c@dli6lmo65' if DEBUG else None)
+# Intenta obtener la clave de Render
+SECRET_KEY = os.environ.get('SECRET_KEY')
+
+# Si no hay clave (estás en tu PC), usamos una de desarrollo solo si DEBUG es True
 if not SECRET_KEY:
-    raise ImproperlyConfigured("SECRET_KEY no está definida en las variables de entorno.")
+    if DEBUG:
+        SECRET_KEY = 'django-insecure-desarrollo-local-12345'
+    else:
+        raise ImproperlyConfigured("SECRET_KEY no está definida en las variables de entorno.")
 
 # Soporta Render y localhost mediante variable de entorno
 ALLOWED_HOSTS = [host.strip() for host in os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',') if host.strip()]
@@ -55,10 +62,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                # Eliminado: 'portafolio.context_processors.pdf_data'
-                # Las queries que hacía ese context_processor ya se manejan
-                # directamente en home() de views.py, así no se ejecutan
-                # en cada request de la app.
             ],
         },
     },
@@ -91,11 +94,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
-# Usamos WhiteNoise para estáticos por velocidad
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
-# --- ARCHIVOS MEDIA (FOTOS) ---
-# Forzamos Cloudinary para las imágenes subidas
+# --- ARCHIVOS MEDIA (CLOUDINARY) ---
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 CLOUDINARY_STORAGE = {
@@ -103,11 +104,10 @@ CLOUDINARY_STORAGE = {
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
     'SECURE': True,
+    'RESOURCE_TYPES': ['image', 'video', 'raw'],  # Permite subir PDFs como 'raw'
 }
 
-# Así debe quedar:
 MEDIA_URL = '/media/'
-#MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 FIXTURE_DIRS = [os.path.join(BASE_DIR, 'fixtures')]
