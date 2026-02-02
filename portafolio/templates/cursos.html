@@ -45,8 +45,24 @@
                             <h6 class="text-uppercase text-muted fw-bold small border-bottom pb-2">Descripción/Contenido</h6>
                             <div class="p-3 bg-light rounded">{{ item.descripcioncurso|linebreaks|default:"Sin descripción." }}</div>
                         </div>
+
                         {% if item.rutacertificado %}
-                        <a href="{{ item.rutacertificado.url }}" target="_blank" class="btn btn-outline-danger w-100">Ver Certificado</a>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <a href="https://docs.google.com/viewer?url={{ item.rutacertificado.url }}&embedded=true" 
+                                   target="_blank" 
+                                   class="btn btn-outline-primary w-100">
+                                   <i class="bi bi-eye-fill me-1"></i> Ver Online
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="{{ item.rutacertificado.url }}" 
+                                   target="_blank" 
+                                   class="btn btn-outline-danger w-100">
+                                   <i class="bi bi-download me-1"></i> Descargar
+                                </a>
+                            </div>
+                        </div>
                         {% endif %}
                     </div>
                 </div>

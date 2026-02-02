@@ -113,3 +113,9 @@ def vista_venta(request):
     perfil = DatosPersonales.objects.first()
     items = VentaGarage.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
     return render(request, 'venta.html', {'perfil': perfil, 'items': items})
+
+
+
+# Nueva función para el error 404
+def error_404(request, exception):
+    return render(request, '404.html', status=404)

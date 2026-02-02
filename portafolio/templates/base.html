@@ -2,7 +2,12 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Portafolio - Dashboard</title>
+    <title>Portafolio - Dashboard | Guillermo</title>
+    <meta name="description" content="Portafolio profesional de Guillermo. Mira mis proyectos y certificaciones.">
+    <meta property="og:title" content="Portafolio Profesional | Guillermo">
+    <meta property="og:description" content="Explora mi trayectoria, experiencia y certificados.">
+    <meta property="og:type" content="website">
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
@@ -11,6 +16,8 @@
         .sidebar a:hover, .sidebar a.active { background: #343a40; color: white; border-left: 4px solid #0d6efd; }
         .content { padding: 20px; background: #f8f9fa; min-height: 100vh; margin-left: 16.666667%; }
         @media (max-width: 768px) { .sidebar { position: relative; height: auto; } .content { margin-left: 0; } }
+        /* Fix para Modo Oscuro */
+        .darkmode-ignore, img, .btn, iframe, .modal-content { isolation: isolate; }
     </style>
 </head>
 <body>
@@ -109,5 +116,19 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+    <script>
+        function addDarkmodeWidget() {
+            new Darkmode({
+                bottom: '32px',
+                right: '32px',
+                time: '0.3s',
+                label: '🌓',
+                saveInCookies: true
+            }).showWidget();
+        }
+        window.addEventListener('load', addDarkmodeWidget);
+    </script>
 </body>
 </html>

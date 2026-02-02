@@ -7,7 +7,7 @@ pip install -r requirements.txt
 
 # Recolectar archivos estáticos
 # Quitamos --clear para evitar problemas de permisos en Render
-python manage.py collectstatic --noinput
+python manage.py collectstatic --no-input
 
 # Migraciones
 python manage.py migrate
