@@ -17,12 +17,27 @@
             .content { margin-left: 0; width: 100%; } 
         }
 
-        /* MODO OSCURO REAL (SIN INVERTIR FOTOS) */
+        /* MODO OSCURO REAL REPARADO */
         body.dark-mode { background-color: #121212; color: #f8f9fa; }
         body.dark-mode .content { background-color: #1a1a1a !important; }
-        body.dark-mode .card { background-color: #242424 !important; color: white !important; border-color: #444; }
+        body.dark-mode .card { background-color: #242424 !important; border-color: #444; }
         body.dark-mode .modal-content { background-color: #242424; color: white; }
-        body.dark-mode .text-muted { color: #aaa !important; }
+        
+        /* FUERZA EL CAMBIO DE COLOR EN TEXTOS QUE SE QUEDABAN NEGROS */
+        body.dark-mode p, 
+        body.dark-mode span, 
+        body.dark-mode i, 
+        body.dark-mode h1, 
+        body.dark-mode h2, 
+        body.dark-mode h3, 
+        body.dark-mode h4, 
+        body.dark-mode h5, 
+        body.dark-mode h6, 
+        body.dark-mode label,
+        body.dark-mode .text-muted { 
+            color: #f8f9fa !important; 
+        }
+
         body.dark-mode .list-group-item { background-color: #242424; color: white; border-color: #444; }
 
         /* Estilo del botón de cambio en el menú */
@@ -156,7 +171,6 @@
             }
         }
 
-        // Leer preferencia al cargar
         window.onload = () => {
             if (localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('dark-mode');
