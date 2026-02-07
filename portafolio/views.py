@@ -1,12 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template.loader import get_template
+from django.contrib.auth.decorators import login_required, user_passes_test
 from xhtml2pdf import pisa
 from .models import (
     DatosPersonales, ExperienciaLaboral, Reconocimientos, 
     CursosRealizados, ProductosAcademicos, ProductosLaborales, VentaGarage
 )
 
+# VISTA HOME
 def home(request):
     perfil = DatosPersonales.objects.first()
     todas_exp = ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil)
@@ -30,6 +32,7 @@ def home(request):
         'todos_pro_lab': todos_pro_lab
     })
 
+# EXPORTAR PDF
 def exportar_pdf(request):
     perfil = DatosPersonales.objects.first()
     tipo = request.GET.get('tipo', 'todo')
@@ -55,16 +58,10 @@ def exportar_pdf(request):
         laborales = ProductosLaborales.objects.filter(idperfilconqueestaactivo=perfil)
         titulo_doc = "Currículum Vitae"
 
-    # --- FIX: URL de foto para el PDF ---
-    # Cloudinary ya devuelve URLs absolutas (https://res.cloudinary.com/...)
-    # build_absolute_uri() solo se necesita cuando la URL es relativa (desarrollo local)
     perfil_foto_url = None
     if perfil and perfil.foto:
         foto_url = perfil.foto.url
-        if foto_url.startswith('http'):
-            perfil_foto_url = foto_url  # Ya es absoluta (Cloudinary en producción)
-        else:
-            perfil_foto_url = request.build_absolute_uri(foto_url)  # Relativa (local con SQLite)
+        perfil_foto_url = foto_url if foto_url.startswith('http') else request.build_absolute_uri(foto_url)
 
     context = {
         'perfil': perfil,
@@ -80,14 +77,12 @@ def exportar_pdf(request):
     
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="CV_{perfil.apellidos}.pdf"'
-    
     template = get_template('pdf_cv.html')
     html = template.render(context)
     pisa.CreatePDF(html, dest=response)
-    
     return response
 
-# Vistas de navegación
+# VISTAS DE NAVEGACIÓN
 def vista_experiencia(request):
     perfil = DatosPersonales.objects.first()
     items = ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
@@ -114,8 +109,19 @@ def vista_venta(request):
     items = VentaGarage.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
     return render(request, 'venta.html', {'perfil': perfil, 'items': items})
 
+# --- NUEVAS FUNCIONES PARA SEPARACIÓN USUARIO/ADMIN ---
 
+@login_required
+def dashboard_usuario(request):
+    # Trae el perfil del usuario logueado
+    perfil = DatosPersonales.objects.filter(usuario=request.user).first()
+    return render(request, 'dashboard_usuario.html', {'perfil': perfil})
 
-# Nueva función para el error 404
+@user_passes_test(lambda u: u.is_staff)
+def dashboard_admin(request):
+    # El admin ve todos los perfiles registrados
+    perfiles = DatosPersonales.objects.all()
+    return render(request, 'dashboard_admin.html', {'perfiles': perfiles})
+
 def error_404(request, exception):
     return render(request, '404.html', status=404)

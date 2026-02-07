@@ -3,6 +3,11 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name='home'),
+    
+    # Dashboards separados
+    path('mi-dashboard/', views.dashboard_usuario, name='dashboard_usuario'),
+    path('control-admin/', views.dashboard_admin, name='dashboard_admin'),
+    
     path('experiencia/', views.vista_experiencia, name='experiencia'),
     path('cursos/', views.vista_cursos, name='cursos'),
     path('reconocimientos/', views.vista_reconocimientos, name='reconocimientos'),

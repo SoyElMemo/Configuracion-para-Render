@@ -1,8 +1,10 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from datetime import date
+from django.contrib.auth.models import User # IMPORTANTE: Para separar usuarios
 from django_countries.fields import CountryField
 from cloudinary_storage.storage import MediaCloudinaryStorage, RawMediaCloudinaryStorage
+
 # --- VALIDACIONES ---
 def validar_fecha_nacimiento(value):
     today = date.today()
@@ -13,8 +15,10 @@ def validar_fecha_nacimiento(value):
 
 # --- 1. DATOS PERSONALES ---
 class DatosPersonales(models.Model):
+    # Relación para que cada usuario tenga su propio perfil
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    
     idperfil = models.AutoField(primary_key=True)
-    # CORREGIDO: Se añade storage para guardar en Cloudinary
     foto = models.ImageField(upload_to='perfil/', storage=MediaCloudinaryStorage(), null=True, blank=True)
     descripcionperfil = models.TextField(max_length=500, null=True, blank=True)
     perfilactivo = models.IntegerField(default=1)
@@ -60,7 +64,6 @@ class ExperienciaLaboral(models.Model):
     fechafingestion = models.DateField(null=True, blank=True)
     
     descripcionfunciones = models.TextField(null=True, blank=True)
-    # CORREGIDO: Se añade storage para guardar en Cloudinary
     rutacertificado = models.FileField(upload_to='certificados_laborales/', storage=RawMediaCloudinaryStorage(), max_length=500, null=True, blank=True)
     activarparaqueseveaenfront = models.BooleanField(default=True)
 
@@ -73,10 +76,9 @@ class ExperienciaLaboral(models.Model):
 
     def clean(self):
         super().clean()
-        # VALIDACIÓN RAZONABLE: No puede trabajar antes de nacer + 14 años
         nacimiento = self.idperfilconqueestaactivo.fechanacimiento
         if self.fechainiciogestion and nacimiento and self.fechainiciogestion.year < (nacimiento.year + 14):
-            raise ValidationError(f'Incoherencia: Según la fecha de nacimiento ({nacimiento.year}), el usuario no podía trabajar en {self.fechainiciogestion.year}.')
+            raise ValidationError(f'Incoherencia laboral detectada.')
 
         if self.fechainiciogestion and self.fechafingestion and self.fechafingestion < self.fechainiciogestion:
             raise ValidationError({'fechafingestion': 'La fecha de fin no puede ser anterior al inicio.'})
@@ -91,7 +93,6 @@ class Reconocimientos(models.Model):
     entidadpatrocinadora = models.CharField(max_length=100, null=True, blank=True)
     nombrecontactoauspicia = models.CharField(max_length=100, null=True, blank=True)
     telefonocontactoauspicia = models.CharField(max_length=20, null=True, blank=True)
-    # CORREGIDO: Se añade storage para guardar en Cloudinary
     rutacertificado = models.FileField(upload_to='certificados_reconocimientos/', storage=RawMediaCloudinaryStorage(),max_length=500, null=True, blank=True)
     activarparaqueseveaenfront = models.BooleanField(default=True)
 
@@ -108,7 +109,6 @@ class CursosRealizados(models.Model):
     nombrecontactoauspicia = models.CharField(max_length=100, null=True, blank=True)
     telefonocontactoauspicia = models.CharField(max_length=20, null=True, blank=True)
     emailempresapatrocinadora = models.EmailField(null=True, blank=True)
-    # CORREGIDO: Se añade storage para guardar en Cloudinary
     rutacertificado = models.FileField(upload_to='certificados_cursos/', storage=RawMediaCloudinaryStorage(), max_length=500, null=True, blank=True)
     activarparaqueseveaenfront = models.BooleanField(default=True)
 
@@ -140,7 +140,6 @@ class VentaGarage(models.Model):
     idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, on_delete=models.CASCADE)
     nombreproducto = models.CharField(max_length=100)
     valordelbien = models.DecimalField(max_digits=10, decimal_places=2)
-    # CORREGIDO: Se añade storage para guardar en Cloudinary
     foto = models.ImageField(upload_to='garage/', storage=MediaCloudinaryStorage(), null=True, blank=True)
     estadoproducto = models.CharField(max_length=20, choices=[('Bueno', 'Bueno'), ('Regular', 'Regular')], default='Bueno')
     descripcion = models.TextField(null=True, blank=True)

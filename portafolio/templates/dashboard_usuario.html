@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="mb-4">Bienvenido a tu Panel, {{ request.user.first_name }}</h2>
+            <hr>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center">
+                    {% if perfil.foto %}
+                        <img src="{{ perfil.foto.url }}" class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">
+                    {% endif %}
+                    <h4>{{ perfil.nombres }} {{ perfil.apellidos }}</h4>
+                    <p class="text-muted">{{ perfil.numerocedula }}</p>
+                    <span class="badge bg-success">Cuenta Activa</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm p-4">
+                <h5>Gestión de Documentos</h5>
+                <p>Desde aquí puedes generar tu currículum actualizado con toda tu información cargada.</p>
+                <div class="d-grid gap-2 d-md-block">
+                    <a href="{% url 'descargar_pdf' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-file-pdf"></i> Descargar CV Completo
+                    </a>
+                    <button type="button" class="btn btn-outline-secondary btn-lg" data-bs-toggle="modal" data-bs-target="#modalPDF">
+                        <i class="fas fa-filter"></i> Personalizar PDF
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <h5>Estado del Perfil</h5>
+                <div class="progress" style="height: 25px;">
+                    <div class="progress-bar bg-info" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">Información Completa</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
