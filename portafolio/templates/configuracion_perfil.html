@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h3><i class="fas fa-user-edit"></i> Configurar mi Perfil</h3>
+        </div>
+        <div class="card-body">
+            {% if mensaje %}
+                <div class="alert alert-success">{{ mensaje }}</div>
+            {% endif %}
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Nombres</label>
+                        <input type="text" name="nombres" class="form-control" value="{{ perfil.nombres|default:'' }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Apellidos</label>
+                        <input type="text" name="apellidos" class="form-control" value="{{ perfil.apellidos|default:'' }}" required>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Cédula</label>
+                        <input type="text" name="numerocedula" class="form-control" value="{{ perfil.numerocedula|default:'' }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha Nacimiento</label>
+                        <input type="date" name="fechanacimiento" class="form-control" value="{{ perfil.fechanacimiento|date:'Y-m-d' }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Foto de Perfil</label>
+                        <input type="file" name="foto" class="form-control">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Dirección Domiciliaria</label>
+                        <input type="text" name="direcciondomiciliaria" class="form-control" value="{{ perfil.direcciondomiciliaria|default:'' }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Lugar Nacimiento</label>
+                        <input type="text" name="lugarnacimiento" class="form-control" value="{{ perfil.lugarnacimiento|default:'' }}" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Descripción del Perfil</label>
+                    <textarea name="descripcionperfil" class="form-control" rows="3">{{ perfil.descripcionperfil|default:'' }}</textarea>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label>Sexo</label>
+                        <select name="sexo" class="form-select">
+                            <option value="H" {% if perfil.sexo == 'H' %}selected{% endif %}>Hombre</option>
+                            <option value="M" {% if perfil.sexo == 'M' %}selected{% endif %}>Mujer</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Estado Civil</label>
+                        <select name="estadocivil" class="form-select">
+                            <option value="Soltero/a" {% if perfil.estadocivil == 'Soltero/a' %}selected{% endif %}>Soltero/a</option>
+                            <option value="Casado/a" {% if perfil.estadocivil == 'Casado/a' %}selected{% endif %}>Casado/a</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Nacionalidad (Código)</label>
+                        <input type="text" name="nacionalidad" class="form-control" value="{{ perfil.nacionalidad|default:'EC' }}">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success btn-lg"><i class="fas fa-save"></i> Guardar Cambios</button>
+                <a href="{% url 'home' %}" class="btn btn-secondary btn-lg">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
