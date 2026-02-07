@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from datetime import date
-from django.contrib.auth.models import User # IMPORTANTE: Para separar usuarios
+from django.contrib.auth.models import User
 from django_countries.fields import CountryField
 from cloudinary_storage.storage import MediaCloudinaryStorage, RawMediaCloudinaryStorage
 
@@ -15,7 +15,7 @@ def validar_fecha_nacimiento(value):
 
 # --- 1. DATOS PERSONALES ---
 class DatosPersonales(models.Model):
-    # Relación para que cada usuario tenga su propio perfil
+    # VINCULACIÓN: Cada perfil pertenece a un usuario único
     usuario = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     
     idperfil = models.AutoField(primary_key=True)
