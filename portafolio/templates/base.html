@@ -17,15 +17,16 @@
             .content { margin-left: 0; width: 100%; } 
         }
 
-        /* MODO OSCURO REAL REPARADO */
+        /* --- CORRECCIÓN MODO OSCURO (ACTITUDES Y FUNCIONES) --- */
         body.dark-mode { background-color: #121212; color: #f8f9fa; }
         body.dark-mode .content { background-color: #1a1a1a !important; }
         body.dark-mode .card { background-color: #242424 !important; border-color: #444; }
         body.dark-mode .modal-content { background-color: #242424; color: white; }
         
-        /* FUERZA EL CAMBIO DE COLOR EN TEXTOS QUE SE QUEDABAN NEGROS */
+        /* FUERZA EL CAMBIO DE COLOR EN TODOS LOS TEXTOS PARA QUE SEAN LEGIBLES */
         body.dark-mode p, 
         body.dark-mode span, 
+        body.dark-mode li,
         body.dark-mode i, 
         body.dark-mode h1, 
         body.dark-mode h2, 
@@ -34,6 +35,7 @@
         body.dark-mode h5, 
         body.dark-mode h6, 
         body.dark-mode label,
+        body.dark-mode div,
         body.dark-mode .text-muted { 
             color: #f8f9fa !important; 
         }
@@ -93,27 +95,27 @@
                 <p class="px-3 text-uppercase text-muted small fw-bold mb-1">GESTIÓN</p>
 
                 {% if user.is_authenticated %}
-                    
-                    <a href="{% url 'configuracion_perfil' %}" class="{% if request.resolver_match.url_name == 'configuracion_perfil' %}active{% endif %} text-warning">
-                        <i class="bi bi-gear-fill me-2"></i> Configurar Perfil
+                    <a href="/admin/portafolio/datospersonales/" class="text-warning">
+                        <i class="bi bi-person-gear me-2"></i> Gestionar Perfil
                     </a>
 
                     {% if user.is_staff %}
-                    <a href="{% url 'panel_master' %}" class="{% if request.resolver_match.url_name == 'panel_master' %}active{% endif %} text-danger">
-                        <i class="bi bi-speedometer2 me-2"></i> Panel Maestro
+                    <a href="/admin/auth/user/" class="text-danger">
+                        <i class="bi bi-people-fill me-2"></i> Gestionar Usuarios
                     </a>
                     {% endif %}
 
-                    <a href="/admin/logout/?next=/" class="text-secondary">
+                    <form id="logout-form" action="/admin/logout/" method="POST" style="display: none;">
+                        {% csrf_token %}
+                    </form>
+                    <a href="#" onclick="document.getElementById('logout-form').submit();" class="text-secondary">
                         <i class="bi bi-box-arrow-left me-2"></i> Cerrar Sesión
                     </a>
 
                 {% else %}
-                    
                     <a href="/admin/login/?next=/" class="text-success">
                         <i class="bi bi-box-arrow-in-right me-2"></i> Ingresar / Login
                     </a>
-
                 {% endif %}
                 
                 <hr class="mx-3 border-secondary">
@@ -196,15 +198,12 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
     <script>
         function toggleTheme() {
             const body = document.body;
             const icon = document.getElementById('theme-icon');
             const text = document.getElementById('theme-text');
-            
             body.classList.toggle('dark-mode');
-            
             if (body.classList.contains('dark-mode')) {
                 icon.className = 'bi bi-sun';
                 text.innerText = 'Modo Claro';
@@ -215,7 +214,6 @@
                 localStorage.setItem('theme', 'light');
             }
         }
-
         window.onload = () => {
             if (localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('dark-mode');

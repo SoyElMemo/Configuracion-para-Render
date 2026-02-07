@@ -1,8 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.template.loader import get_template
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from xhtml2pdf import pisa
 from .models import (
     DatosPersonales, ExperienciaLaboral, Reconocimientos, 
@@ -10,21 +9,22 @@ from .models import (
 )
 
 def home(request):
-    # Si el usuario está logueado, intentamos mostrar SU perfil
+    # Lógica de perfil: Prioriza al usuario logueado, si no, el primero disponible
+    perfil = None
     if request.user.is_authenticated:
         perfil = DatosPersonales.objects.filter(usuario=request.user).first()
-        # Si no tiene perfil, mostramos el primero público o vacío
-        if not perfil:
-            perfil = DatosPersonales.objects.first()
-    else:
+    
+    if not perfil:
         perfil = DatosPersonales.objects.first()
 
+    # Filtramos los datos pertenecientes al perfil activo
     todas_exp = ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil) if perfil else []
     todos_cur = CursosRealizados.objects.filter(idperfilconqueestaactivo=perfil) if perfil else []
     todos_rec = Reconocimientos.objects.filter(idperfilconqueestaactivo=perfil) if perfil else []
     todos_pro = ProductosAcademicos.objects.filter(idperfilconqueestaactivo=perfil) if perfil else []
     todos_pro_lab = ProductosLaborales.objects.filter(idperfilconqueestaactivo=perfil) if perfil else []
 
+    # Procesamiento de listas para el front-end
     if perfil:
         if perfil.aptitudes:
             perfil.lista_aptitudes = [a.strip() for a in perfil.aptitudes.split(',')]
@@ -41,16 +41,17 @@ def home(request):
     })
 
 def exportar_pdf(request):
-    perfil = DatosPersonales.objects.first()
-    # Intenta obtener el perfil del usuario logueado si existe
+    # Selección de perfil para el PDF
+    perfil = None
     if request.user.is_authenticated:
-        perfil_usuario = DatosPersonales.objects.filter(usuario=request.user).first()
-        if perfil_usuario:
-            perfil = perfil_usuario
+        perfil = DatosPersonales.objects.filter(usuario=request.user).first()
+    
+    if not perfil:
+        perfil = DatosPersonales.objects.first()
 
     tipo = request.GET.get('tipo', 'todo')
     
-    if tipo == 'personalizado':
+    if tipo == 'personalizado' and perfil:
         ids_exp = request.GET.getlist('chk_exp')
         ids_cur = request.GET.getlist('chk_cur')
         ids_rec = request.GET.getlist('chk_rec')
@@ -71,13 +72,11 @@ def exportar_pdf(request):
         laborales = ProductosLaborales.objects.filter(idperfilconqueestaactivo=perfil)
         titulo_doc = "Currículum Vitae"
 
+    # Preparar URL de la foto para el PDF
     perfil_foto_url = None
     if perfil and perfil.foto:
         foto_url = perfil.foto.url
-        if foto_url.startswith('http'):
-            perfil_foto_url = foto_url
-        else:
-            perfil_foto_url = request.build_absolute_uri(foto_url)
+        perfil_foto_url = request.build_absolute_uri(foto_url) if not foto_url.startswith('http') else foto_url
 
     context = {
         'perfil': perfil,
@@ -87,15 +86,12 @@ def exportar_pdf(request):
         'academicos': academicos,
         'laborales': laborales,
         'titulo_doc': titulo_doc,
-        'user': request.user,
         'perfil_foto_url': perfil_foto_url
     }
     
     response = HttpResponse(content_type='application/pdf')
-    if perfil:
-        response['Content-Disposition'] = f'attachment; filename="CV_{perfil.apellidos}.pdf"'
-    else:
-        response['Content-Disposition'] = f'attachment; filename="CV_Generico.pdf"'
+    filename = f"CV_{perfil.apellidos}.pdf" if perfil else "CV_Generico.pdf"
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
     
     template = get_template('pdf_cv.html')
     html = template.render(context)
@@ -103,7 +99,7 @@ def exportar_pdf(request):
     
     return response
 
-# Vistas de navegación (Mantienen la lógica original)
+# Vistas de navegación corregidas para usar el perfil detectado
 def vista_experiencia(request):
     perfil = DatosPersonales.objects.first()
     items = ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
@@ -121,8 +117,8 @@ def vista_reconocimientos(request):
 
 def vista_productos(request):
     perfil = DatosPersonales.objects.first()
-    academicos = ProductosAcademicos.objects.filter(idperfilconqueestaactivo=perfil)
-    laborales = ProductosLaborales.objects.filter(idperfilconqueestaactivo=perfil)
+    academicos = ProductosAcademicos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
+    laborales = ProductosLaborales.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
     return render(request, 'productos.html', {'perfil': perfil, 'academicos': academicos, 'laborales': laborales})
 
 def vista_venta(request):
@@ -132,72 +128,3 @@ def vista_venta(request):
 
 def error_404(request, exception):
     return render(request, '404.html', status=404)
-
-
-# =======================================================
-# NUEVAS FUNCIONES DE GESTIÓN (USUARIO Y ADMIN)
-# =======================================================
-
-# 1. Configuración del Perfil (Para el Usuario)
-@login_required
-def configuracion_perfil(request):
-    # Busca el perfil del usuario logueado
-    perfil = DatosPersonales.objects.filter(usuario=request.user).first()
-    mensaje = None
-
-    if request.method == 'POST':
-        # Si no tiene perfil, se crea uno nuevo vinculado a este usuario
-        if not perfil:
-            perfil = DatosPersonales(usuario=request.user)
-        
-        # Guardamos los datos que vienen del formulario
-        try:
-            perfil.nombres = request.POST.get('nombres')
-            perfil.apellidos = request.POST.get('apellidos')
-            perfil.numerocedula = request.POST.get('numerocedula')
-            perfil.nacionalidad = request.POST.get('nacionalidad')
-            perfil.lugarnacimiento = request.POST.get('lugarnacimiento')
-            perfil.fechanacimiento = request.POST.get('fechanacimiento')
-            perfil.sexo = request.POST.get('sexo')
-            perfil.estadocivil = request.POST.get('estadocivil')
-            perfil.licenciaconducir = request.POST.get('licenciaconducir')
-            perfil.direcciondomiciliaria = request.POST.get('direcciondomiciliaria')
-            perfil.descripcionperfil = request.POST.get('descripcionperfil')
-            
-            if request.FILES.get('foto'):
-                perfil.foto = request.FILES.get('foto')
-
-            perfil.save()
-            mensaje = "¡Perfil actualizado correctamente!"
-        except Exception as e:
-            mensaje = f"Error al guardar: {e}"
-
-    return render(request, 'configuracion_perfil.html', {'perfil': perfil, 'mensaje': mensaje})
-
-
-# 2. Panel Maestro (Para el Admin)
-@user_passes_test(lambda u: u.is_staff)
-def panel_master(request):
-    # Lista todos los usuarios menos los superusuarios
-    usuarios = User.objects.all().order_by('-date_joined')
-    return render(request, 'panel_master.html', {'usuarios': usuarios})
-
-# 3. Acción de Admin (Bloquear/Eliminar)
-@user_passes_test(lambda u: u.is_staff)
-def accion_usuario(request, user_id, accion):
-    usuario_objetivo = get_object_or_404(User, id=user_id)
-    
-    # Evitar que el admin se elimine a sí mismo
-    if usuario_objetivo == request.user:
-        return redirect('panel_master')
-
-    if accion == 'bloquear':
-        usuario_objetivo.is_active = False
-        usuario_objetivo.save()
-    elif accion == 'activar':
-        usuario_objetivo.is_active = True
-        usuario_objetivo.save()
-    elif accion == 'eliminar':
-        usuario_objetivo.delete()
-    
-    return redirect('panel_master')

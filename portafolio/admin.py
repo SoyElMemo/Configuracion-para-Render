@@ -58,7 +58,6 @@ class ProductosLaboralesAdmin(admin.ModelAdmin):
 
 @admin.register(VentaGarage)
 class VentaGarageAdmin(admin.ModelAdmin):
-    # Usamos 'valordelbien' y 'foto' que son tus nombres reales en models.py
     list_display = ('nombreproducto', 'valordelbien', 'estadoproducto', 'activarparaqueseveaenfront', 'ver_foto')
     list_filter = ('activarparaqueseveaenfront', 'estadoproducto')
     list_editable = ('valordelbien', 'activarparaqueseveaenfront')
